@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
@@ -8,11 +9,10 @@ import { getOptionsForVote } from "../utils/getRandomPokemon";
 import { useMemo, useState } from "react";
 
 const Home: NextPage = () => {
-  const hello = api.router.hello.useQuery({ text: "from tRPC" });
   const [ids, updateIds] = useState(getOptionsForVote());
   const [first, second] = ids;
-  const firstPokemon = api.router.getPokemonById.useQuery({ id: first });
-  const secondPokemon = api.router.getPokemonById.useQuery({ id: second });
+  const firstPokemon = api.pokemon.getPokemonById.useQuery({ id: first });
+  const secondPokemon = api.pokemon.getPokemonById.useQuery({ id: second });
   console.log("firstPokemon", firstPokemon.data);
   console.log("secondPokemon", secondPokemon.data);
   console.log("second", second);

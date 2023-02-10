@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { PokemonClient } from "pokenode-ts";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
 
 export const exampleRouter = createTRPCRouter({
@@ -19,12 +18,4 @@ export const exampleRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
-
-  getPokemonById: publicProcedure
-    .input(z.object({ id: z.number()}))
-    .query(({ input }) => {
-      const api = new PokemonClient();
-      const pokemon = api.getPokemonById(input.id);
-      return pokemon;
-    }),
 });
