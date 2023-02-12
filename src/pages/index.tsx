@@ -7,44 +7,43 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "../utils/api";
 import { getOptionsForVote } from "../utils/getRandomPokemon";
 import { useMemo, useState } from "react";
+import { inferQueryResponse } from "./api/trpc/[trpc]";
 
+const btn =
+  "rounded border border-gray-800 bg-white py-1 px-2 font-semibold text-gray-700 hover:border-white hover:bg-gray-200 hover:text-black";
 const Home: NextPage = () => {
   const [ids, updateIds] = useState(getOptionsForVote());
   const [first, second] = ids;
   const firstPokemon = api.pokemon.getPokemonById.useQuery({ id: first });
   const secondPokemon = api.pokemon.getPokemonById.useQuery({ id: second });
-  console.log("firstPokemon", firstPokemon.data);
-  console.log("secondPokemon", secondPokemon.data);
-  console.log("second", second);
 
-  if (firstPokemon.isLoading || secondPokemon.isLoading) return null;
+  const voteForRoundest = (selected: number) => {
+    console.log("voted");
+    updateIds(getOptionsForVote());
+  };
+
   return (
     <>
       <div className="flex h-screen w-screen flex-col items-center justify-center">
         <div className="text-center text-2xl ">Which pokemon is rounder?</div>
         <div className="p-2" />
         <div className="flex max-w-2xl items-center justify-between rounded border p-8">
-          <div className="h-64 w-64 flex flex-col">
-            <img
-              alt={firstPokemon.data?.name}
-              src={firstPokemon.data?.sprites.front_default}
-              className="w-full"
-            />
-            <div className='capitalize text-center mt-[-2rem]'>
-              {firstPokemon.data?.name}
-            </div>
-          </div>
-          <div className="p-8">vs</div>
-          <div className="h-64 w-64 flex flex-col">
-            <img
-              alt={secondPokemon.data?.name}
-              src={secondPokemon.data?.sprites.front_default}
-              className="w-full"
-            />
-            <div className='capitalize text-center mt-[-2rem]'>
-              {secondPokemon.data?.name}
-            </div>
-          </div>
+          {!firstPokemon.isLoading &&
+            firstPokemon.data &&
+            !secondPokemon.isLoading &&
+            secondPokemon.data && (
+              <>
+                <PokemonListing
+                  pokemon={firstPokemon.data}
+                  vote={() => voteForRoundest(first)}
+                />
+                <div className="p-8">vs</div>
+                <PokemonListing
+                  pokemon={secondPokemon.data}
+                  vote={() => voteForRoundest(second)}
+                />
+              </>
+            )}
         </div>
         <AuthShowcase />
       </div>
@@ -53,6 +52,27 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+const PokemonListing: React.FC<{
+  pokemon: { name: string; sprites: any };
+  vote: () => void;
+}> = (props) => {
+  return (
+    <div className="flex flex-col items-center">
+      <img
+        alt={props.pokemon.name}
+        src={props.pokemon.sprites.front_default}
+        className="h-64 w-64"
+      />
+      <div className="mt-[-3rem] text-center capitalize">
+        {props.pokemon.name}
+      </div>
+      <button className={btn} onClick={() => props.vote()}>
+        Rounder
+      </button>
+    </div>
+  );
+};
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
