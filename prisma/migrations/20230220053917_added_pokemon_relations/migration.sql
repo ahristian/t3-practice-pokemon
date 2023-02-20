@@ -1,12 +1,4 @@
 -- CreateTable
-CREATE TABLE "Vote" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "votedFor" INTEGER NOT NULL,
-    "votedAgainst" INTEGER NOT NULL
-);
-
--- CreateTable
 CREATE TABLE "Example" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

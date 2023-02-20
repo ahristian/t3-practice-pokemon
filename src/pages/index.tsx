@@ -3,23 +3,23 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "../utils/api";
 import { getOptionsForVote } from "../utils/getRandomPokemon";
 import { useState } from "react";
+import Image from 'next/image';
+
 const btn =
   "rounded border border-gray-800 bg-white py-1 px-2 font-semibold text-gray-700 hover:border-white hover:bg-gray-200 hover:text-black";
 const Home: NextPage = () => {
-  const getAllPokemons = 30;
-    // api.pokemon.getAllPokemons.useQuery().data?.count ?? 5;
 
-  const [ids, updateIds] = useState(getOptionsForVote(getAllPokemons));
+  const [ids, updateIds] = useState(getOptionsForVote());
   const [first, second] = ids;
-  const firstPokemonVote = api.pokemon.getPokemonVoteById.useQuery({
-    id: first,
-  });
+  // const firstPokemonVote = api.pokemon.getPokemonVoteById.useQuery({
+  //   id: first,
+  // });
   const firstPokemon = api.pokemon.getPokemonById.useQuery({ id: first });
-  const secondPokemonVote = api.pokemon.getPokemonVoteById.useQuery({
-    id: second,
-  });
+  // const secondPokemonVote = api.pokemon.getPokemonVoteById.useQuery({
+  //   id: second,
+  // });
   const secondPokemon = api.pokemon.getPokemonById.useQuery({ id: second });
-  const getAllVotes = api.pokemon.getAllVotes.useQuery();
+  // const getAllVotes = api.pokemon.getAllVotes.useQuery();
   const voteMutation = api.pokemon.castVote.useMutation();
 
   const voteForRoundest = (selected: number) => {
@@ -34,14 +34,14 @@ const Home: NextPage = () => {
         votedAgainst: first,
       });
     }
-    updateIds(getOptionsForVote(getAllPokemons));
+    updateIds(getOptionsForVote());
   };
 
   return (
     <>
-      <div className="flex h-screen w-screen flex-col items-center justify-center">
-        <div className="text-center text-2xl ">Which pokemon is rounder?</div>
-        <div className="text-center text-2xl ">Total Votes {getAllVotes.data?.length}</div>
+      <div className="relative flex h-screen w-screen flex-col items-center justify-center">
+        <div className="text-center text-2xl ">Which pokemon looks better?</div>
+        {/* <div className="text-center text-2xl ">Total Votes {getAllVotes.data?.length}</div> */}
         <div className="p-2" />
         <div className="flex max-w-2xl items-center justify-between rounded border p-8">
           {!firstPokemon.isLoading &&
@@ -51,13 +51,13 @@ const Home: NextPage = () => {
               <>
                 <PokemonListing
                   pokemon={firstPokemon.data}
-                  votes={firstPokemonVote.data?.length ?? 0}
+                  // votes={firstPokemonVote.data?.length ?? 0}
                   vote={() => voteForRoundest(first)}
                 />
                 <div className="p-8">vs</div>
                 <PokemonListing
                   pokemon={secondPokemon.data}
-                  votes={secondPokemonVote.data?.length ?? 0}
+                  // votes={secondPokemonVote.data?.length ?? 0}
                   vote={() => voteForRoundest(second)}
                 />
               </>
@@ -78,9 +78,11 @@ const PokemonListing: React.FC<{
 }> = (props) => {
   return (
     <div className="flex flex-col items-center">
-      <img
+      <Image
         alt={props.pokemon.name}
-        src={props.pokemon.sprites.front_default}
+        src={props.pokemon.sprites}
+        height={256}
+        width={256}
         className="h-64 w-64"
       />
       <div className="mt-[-3rem] text-center capitalize">
