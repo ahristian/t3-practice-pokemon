@@ -2,6 +2,7 @@ import type { GetServerSideProps } from "next";
 import { prisma } from "../server/db";
 import { AsyncReturnType } from "../utils/ts-bs";
 import Image from "next/image";
+import Link from "next/link";
 
 const getPokemonInOrder = async () => {
   return await prisma.pokemon.findMany({
@@ -31,7 +32,7 @@ type PokemonQueryResult = AsyncReturnType<typeof getPokemonInOrder>;
 const generateCountPercent = (pokemon: PokemonQueryResult[number]) => {
   const { votesFor, votesAgainst } = pokemon._count;
   if (votesFor + votesAgainst === 0) {
-    return "0"
+    return "0";
   }
   return ((votesFor / (votesAgainst + votesFor)) * 100).toString();
 };
@@ -40,7 +41,7 @@ const PokemonListing: React.FC<{ pokemon: PokemonQueryResult[number] }> = (
   props
 ) => {
   return (
-    <div className="flex items-center border-b p-2 justify-between">
+    <div className="flex items-center justify-between border-b p-2">
       <div className="flex items-center">
         <Image
           alt={props.pokemon.name}
@@ -48,7 +49,7 @@ const PokemonListing: React.FC<{ pokemon: PokemonQueryResult[number] }> = (
           height={64}
           width={64}
         />
-        <div className="capitalize pl-2">{props.pokemon.name}</div>
+        <div className="pl-2 capitalize">{props.pokemon.name}</div>
       </div>
       <div className="pr-4">{generateCountPercent(props.pokemon) + "%"}</div>
     </div>
@@ -60,6 +61,7 @@ const ResultsPage: React.FC<{
 }> = (props) => {
   return (
     <div className="flex flex-col items-center ">
+      <Link href="/">Voting</Link>
       <h2 className="mb-2 text-2xl">Results</h2>
       <div className="flex w-full max-w-2xl flex-col border">
         {props.pokemon.map((currentPokemon, index) => {
